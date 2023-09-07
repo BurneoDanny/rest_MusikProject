@@ -42,5 +42,30 @@ const getSongsNumberByArtist = function (req, res, next) {
     });
 };
 
+const postArtista = function(req, res, next) {  
+  const { nombre, pais, fundacion, biografia } = req.body;
 
-module.exports = {getArtistas, getSongsNumberByArtist};
+  artista.findOrCreate({
+    where: { nombre: nombre },
+    defaults: {
+      pais: pais,
+      fundacion: fundacion,
+      biografia: biografia
+    }
+  })
+  .then(([artista, creado]) => {
+    if (creado) {
+      res.status(201).json(artista);
+    } else {
+      res.json({ error: 'El artista ya existe en la base de datos' });
+    }
+  })
+  .catch((error) => {
+    console.error('Error al agregar el artista', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  });
+
+};
+
+
+module.exports = {getArtistas, getSongsNumberByArtist, postArtista};
